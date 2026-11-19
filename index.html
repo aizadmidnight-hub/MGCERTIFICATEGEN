@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>E-Sijil Larian</title>
+  <!-- Enjin PDF dimuatkan terus dari GitHub anda sendiri (100% stabil) -->
+  <script src="jspdf.umd.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -12,7 +14,7 @@
       background-position: center;
       background-attachment: fixed;
       display: flex;
-      flex-direction: column; /* Susun logo di atas kotak borang */
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
@@ -21,11 +23,11 @@
       box-sizing: border-box;
     }
     .logo-luar {
-      max-width: 180px; /* Boleh besarkan/kecilkan saiz logo di sini */
+      max-width: 180px;
       max-height: 110px;
       object-fit: contain;
       margin-bottom: 18px;
-      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5)); /* Bayang halus supaya logo lagi timbul */
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5));
     }
     .card {
       background: rgba(255, 255, 255, 0.96);
@@ -50,7 +52,7 @@
       text-transform: uppercase;
     }
     input:focus { border-color: #007bff; outline: none; }
-    button {
+    button.btn-utama {
       width: 100%;
       padding: 14px;
       background: #007bff;
@@ -61,18 +63,31 @@
       font-weight: bold;
       cursor: pointer;
     }
-    button:hover { background: #0056b3; }
+    button.btn-utama:hover { background: #0056b3; }
     #previewBox { display: none; margin-top: 20px; }
     img#hasilSijil { width: 100%; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 12px; }
-    .btn-simpan {
+    .btn-pdf {
       display: block;
       width: 100%;
       padding: 14px;
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .btn-simpan {
+      display: block;
+      width: 100%;
+      padding: 13px;
       background: #28a745;
       color: white;
       text-decoration: none;
       border-radius: 8px;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: bold;
       box-sizing: border-box;
     }
@@ -81,7 +96,6 @@
 </head>
 <body>
 
-  <!-- Logo Syarikat diletakkan di luar (atas) kotak putih -->
   <img src="logo.png" alt="Logo Penganjur" class="logo-luar" onerror="this.style.display='none'">
 
   <div class="card">
@@ -91,19 +105,27 @@
     <input type="text" id="nama" placeholder="NAMA PENUH (HURUF BESAR)" required>
     <input type="text" id="ic" placeholder="NO. KAD PENGENALAN (CTH: 950101081234)" required>
     
-    <button onclick="janaSijil()">Jana E-Sijil</button>
+    <button class="btn-utama" onclick="janaSijil()">Jana E-Sijil</button>
 
     <div id="previewBox">
       <p style="font-size: 14px; color: #28a745; font-weight: bold;">Sijil anda telah siap!</p>
       <img id="hasilSijil" alt="Pratonton Sijil">
-      <a id="linkDownload" class="btn-simpan" download="ESijil.jpg">Muat Turun Sijil Sekarang</a>
-      <p class="nota">Jika muat turun tidak bermula, tekan & tahan pada gambar sijil di atas > pilih <b>Simpan Imej (Save Image)</b>.</p>
+      
+      <button class="btn-pdf" onclick="muatTurunPDF()">Muat Turun PDF (Rasmi)</button>
+      <a id="linkDownload" class="btn-simpan" download="ESijil.jpg">Simpan Gambar (JPG)</a>
+      
+      <p class="nota">Jika guna telefon, PDF akan disimpan ke dalam folder <b>Downloads / Files</b> anda.</p>
     </div>
   </div>
 
 <canvas id="kanvas" style="display:none;"></canvas>
 
 <script>
+  let sijilDataURL = "";
+  let namaPeserta = "";
+  let lebarGambar = 0;
+  let tinggiGambar = 0;
+
   function janaSijil() {
     const nama = document.getElementById('nama').value.trim().toUpperCase();
     const ic = document.getElementById('ic').value.trim();
@@ -122,10 +144,11 @@
 
       canvas.width = img.width;
       canvas.height = img.height;
+      lebarGambar = img.width;
+      tinggiGambar = img.height;
 
       ctx.drawImage(img, 0, 0);
 
-      // Warna Tulisan Putih & Rapat
       ctx.fillStyle = "#ffffff";
       ctx.textAlign = "center";
 
@@ -137,12 +160,13 @@
       ctx.font = "normal " + saizIC + "px Arial";
       ctx.fillText(ic, canvas.width * 0.5, canvas.height * 0.52);
 
-      const dataURL = canvas.toDataURL('image/jpeg', 0.95);
+      sijilDataURL = canvas.toDataURL('image/jpeg', 0.95);
+      namaPeserta = nama.replace(/\s+/g, '_');
 
-      document.getElementById('hasilSijil').src = dataURL;
+      document.getElementById('hasilSijil').src = sijilDataURL;
       const link = document.getElementById('linkDownload');
-      link.href = dataURL;
-      link.download = "ESijil_" + nama.replace(/\s+/g, '_') + ".jpg";
+      link.href = sijilDataURL;
+      link.download = "ESijil_" + namaPeserta + ".jpg";
       
       document.getElementById('previewBox').style.display = 'block';
     };
@@ -150,6 +174,22 @@
     img.onerror = function() {
       alert("Ralat: Fail gambar 'sijil.jpg' tidak dijumpai dalam GitHub!");
     };
+  }
+
+  function muatTurunPDF() {
+    if (!window.jspdf) {
+      alert("Fail jspdf.umd.min.js belum dimuat naik ke GitHub. Sila guna butang Simpan Gambar (JPG).");
+      return;
+    }
+    const { jsPDF } = window.jspdf;
+    // Automatik kesan orientasi sijil (Melintang atau Menegak)
+    const orientasi = lebarGambar > tinggiGambar ? 'l' : 'p';
+    const doc = new jsPDF(orientasi, 'mm', 'a4');
+    const lebarPDF = orientasi === 'l' ? 297 : 210;
+    const tinggiPDF = orientasi === 'l' ? 210 : 297;
+
+    doc.addImage(sijilDataURL, 'JPEG', 0, 0, lebarPDF, tinggiPDF);
+    doc.save("ESijil_" + namaPeserta + ".pdf");
   }
 </script>
 
