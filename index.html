@@ -4,7 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>E-Sijil Larian</title>
-  <script src="https://cloudflare.com"></script>
+  <!-- Pelayan Utama & Sandaran untuk jsPDF -->
+  <script src="https://unpkg.com"></script>
+  <script>
+    if (!window.jspdf) {
+      document.write('<script src="https://jsdelivr.net"><\/script>');
+    }
+  </script>
   <style>
     body { font-family: Arial, sans-serif; background: #f4f6f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
     .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 400px; width: 100%; text-align: center; }
@@ -26,7 +32,7 @@
   <input type="text" id="ic" placeholder="NO. KAD PENGENALAN (CTH: 950101081234)" required>
   
   <button id="btnDownload" onclick="janaSijil()">Muat Turun Sijil (PDF)</button>
-  <p class="nota">Sila buka pautan ini menggunakan Chrome atau Safari jika muat turun tidak bermula.</p>
+  <p class="nota">Pastikan ejaan nama & nombor IC adalah tepat sebelum muat turun.</p>
 </div>
 
 <script>
@@ -40,20 +46,21 @@
       return;
     }
 
-    if (!window.jspdf) {
-      alert("Sistem PDF gagal dimuatkan. Sila semak sambungan internet dan muat semula halaman.");
+    // Sokong kedua-dua format pemanggilan jsPDF
+    const jsPDFConstructor = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : window.jsPDF;
+
+    if (!jsPDFConstructor) {
+      alert("Sistem PDF masih gagal dimuatkan. Sila pastikan sambungan internet stabil atau cuba matikan VPN/AdBlocker.");
       return;
     }
 
     btn.disabled = true;
     btn.innerText = "Sedang menjana sijil...";
 
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('l', 'mm', 'a4'); 
+    const doc = new jsPDFConstructor('l', 'mm', 'a4'); 
 
     const img = new Image();
-    img.crossOrigin = "Anonymous";
-    img.src = 'sijil.jpg'; // TUKAR JIKA NAMA FAIL GAMBAR ANDA BERBEZA
+    img.src = 'sijil.jpg'; 
 
     img.onload = function() {
       try {
@@ -78,7 +85,7 @@
     };
 
     img.onerror = function() {
-      alert("Ralat: Fail gambar 'sijil.jpg' tidak dijumpai! Pastikan nama fail gambar dalam GitHub tepat seperti dalam kod.");
+      alert("Ralat: Fail gambar 'sijil.jpg' tidak dijumpai! Pastikan nama fail gambar dalam GitHub ialah sijil.jpg.");
       btn.disabled = false;
       btn.innerText = "Muat Turun Sijil (PDF)";
     };
