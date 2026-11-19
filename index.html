@@ -7,33 +7,35 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      /* Gambar Background dengan lapisan gelap lutsinar supaya borang jelas */
-      background: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url('bg.jpg');
+      background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('bg.jpg');
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
       display: flex;
+      flex-direction: column; /* Susun logo di atas kotak borang */
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       margin: 0;
-      padding: 15px;
+      padding: 20px 15px;
       box-sizing: border-box;
+    }
+    .logo-luar {
+      max-width: 180px; /* Boleh besarkan/kecilkan saiz logo di sini */
+      max-height: 110px;
+      object-fit: contain;
+      margin-bottom: 18px;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5)); /* Bayang halus supaya logo lagi timbul */
     }
     .card {
       background: rgba(255, 255, 255, 0.96);
-      padding: 30px 25px;
+      padding: 28px 24px;
       border-radius: 16px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
       max-width: 420px;
       width: 100%;
       text-align: center;
-    }
-    .logo-syarikat {
-      max-width: 140px; /* Ubah nilai ini untuk besarkan/kecilkan logo */
-      max-height: 90px;
-      object-fit: contain;
-      margin-bottom: 12px;
+      box-sizing: border-box;
     }
     h2 { margin: 0 0 8px; color: #1a1a1a; font-size: 22px; }
     p.sub { margin: 0 0 20px; color: #555; font-size: 14px; }
@@ -51,7 +53,7 @@
     button {
       width: 100%;
       padding: 14px;
-      background: #007bff; /* Boleh tukar kod warna ikut tema syarikat */
+      background: #007bff;
       color: white;
       border: none;
       border-radius: 8px;
@@ -79,25 +81,25 @@
 </head>
 <body>
 
-<div class="card">
-  <!-- Logo Syarikat -->
-  <img src="logo.png" alt="Logo Penganjur" class="logo-syarikat" onerror="this.style.display='none'">
-  
-  <h2>Muat Turun E-Sijil</h2>
-  <p class="sub">Sila masukkan maklumat anda untuk menjana sijil penyertaan.</p>
-  
-  <input type="text" id="nama" placeholder="NAMA PENUH (HURUF BESAR)" required>
-  <input type="text" id="ic" placeholder="NO. KAD PENGENALAN (CTH: 950101081234)" required>
-  
-  <button onclick="janaSijil()">Jana E-Sijil</button>
+  <!-- Logo Syarikat diletakkan di luar (atas) kotak putih -->
+  <img src="logo.png" alt="Logo Penganjur" class="logo-luar" onerror="this.style.display='none'">
 
-  <div id="previewBox">
-    <p style="font-size: 14px; color: #28a745; font-weight: bold;">Sijil anda telah siap!</p>
-    <img id="hasilSijil" alt="Pratonton Sijil">
-    <a id="linkDownload" class="btn-simpan" download="ESijil.jpg">Muat Turun Sijil Sekarang</a>
-    <p class="nota">Jika muat turun tidak bermula, tekan & tahan pada gambar sijil di atas > pilih <b>Simpan Imej (Save Image)</b>.</p>
+  <div class="card">
+    <h2>Muat Turun E-Sijil</h2>
+    <p class="sub">Sila masukkan maklumat anda untuk menjana sijil penyertaan.</p>
+    
+    <input type="text" id="nama" placeholder="NAMA PENUH (HURUF BESAR)" required>
+    <input type="text" id="ic" placeholder="NO. KAD PENGENALAN (CTH: 950101081234)" required>
+    
+    <button onclick="janaSijil()">Jana E-Sijil</button>
+
+    <div id="previewBox">
+      <p style="font-size: 14px; color: #28a745; font-weight: bold;">Sijil anda telah siap!</p>
+      <img id="hasilSijil" alt="Pratonton Sijil">
+      <a id="linkDownload" class="btn-simpan" download="ESijil.jpg">Muat Turun Sijil Sekarang</a>
+      <p class="nota">Jika muat turun tidak bermula, tekan & tahan pada gambar sijil di atas > pilih <b>Simpan Imej (Save Image)</b>.</p>
+    </div>
   </div>
-</div>
 
 <canvas id="kanvas" style="display:none;"></canvas>
 
