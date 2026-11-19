@@ -65,7 +65,7 @@
       // Tetapan Tulisan Nama (Saiz tulisan ikut skala gambar)
       const saizNama = Math.round(canvas.width * 0.035);
       ctx.font = "bold " + saizNama + "px Arial";
-      ctx.fillStyle = "#1e1e1e";
+      ctx.fillStyle = "#FFFFFF";
       ctx.textAlign = "center";
       
       // Posisi Nama: Tengah (0.5), Tinggi 50% dari atas (0.50)
@@ -76,7 +76,7 @@
       ctx.font = "normal " + saizIC + "px Arial";
       
       // Posisi IC: Tengah (0.5), Tinggi 55% dari atas (0.55)
-      ctx.fillText(ic, canvas.width * 0.5, canvas.height * 0.55);
+      ctx.fillText(ic, canvas.width * 0.5, canvas.height * 0.5);
 
       // Tukar hasil kepada gambar JPG berkualiti tinggi
       const dataURL = canvas.toDataURL('image/jpeg', 0.95);
