@@ -5,23 +5,86 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>E-Sijil Larian</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f6f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
-    .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 420px; width: 100%; text-align: center; }
-    h2 { margin-top: 0; color: #222; }
-    input { width: 100%; padding: 12px; margin: 8px 0 16px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; text-transform: uppercase; }
-    button { width: 100%; padding: 14px; background: #007bff; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
+    body {
+      font-family: Arial, sans-serif;
+      /* Gambar Background dengan lapisan gelap lutsinar supaya borang jelas */
+      background: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url('bg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 15px;
+      box-sizing: border-box;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.96);
+      padding: 30px 25px;
+      border-radius: 16px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+    }
+    .logo-syarikat {
+      max-width: 140px; /* Ubah nilai ini untuk besarkan/kecilkan logo */
+      max-height: 90px;
+      object-fit: contain;
+      margin-bottom: 12px;
+    }
+    h2 { margin: 0 0 8px; color: #1a1a1a; font-size: 22px; }
+    p.sub { margin: 0 0 20px; color: #555; font-size: 14px; }
+    input {
+      width: 100%;
+      padding: 13px;
+      margin-bottom: 14px;
+      border: 1.5px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 16px;
+      text-transform: uppercase;
+    }
+    input:focus { border-color: #007bff; outline: none; }
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #007bff; /* Boleh tukar kod warna ikut tema syarikat */
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
     button:hover { background: #0056b3; }
     #previewBox { display: none; margin-top: 20px; }
     img#hasilSijil { width: 100%; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 12px; }
-    .btn-simpan { display: block; width: 100%; padding: 14px; background: #28a745; color: white; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; box-sizing: border-box; }
+    .btn-simpan {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: #28a745;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      box-sizing: border-box;
+    }
     .nota { font-size: 12px; color: #666; margin-top: 12px; }
   </style>
 </head>
 <body>
 
 <div class="card">
+  <!-- Logo Syarikat -->
+  <img src="logo.png" alt="Logo Penganjur" class="logo-syarikat" onerror="this.style.display='none'">
+  
   <h2>Muat Turun E-Sijil</h2>
-  <p>Sila masukkan maklumat anda untuk menjana sijil penyertaan.</p>
+  <p class="sub">Sila masukkan maklumat anda untuk menjana sijil penyertaan.</p>
   
   <input type="text" id="nama" placeholder="NAMA PENUH (HURUF BESAR)" required>
   <input type="text" id="ic" placeholder="NO. KAD PENGENALAN (CTH: 950101081234)" required>
@@ -55,33 +118,25 @@
       const canvas = document.getElementById('kanvas');
       const ctx = canvas.getContext('2d');
 
-      // Ikut saiz asal gambar sijil.jpg secara automatik
       canvas.width = img.width;
       canvas.height = img.height;
 
-      // Lukis gambar sijil asal
       ctx.drawImage(img, 0, 0);
 
-      // Tetapan Tulisan Nama (Saiz tulisan ikut skala gambar)
+      // Warna Tulisan Putih & Rapat
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "center";
+
       const saizNama = Math.round(canvas.width * 0.035);
       ctx.font = "bold " + saizNama + "px Arial";
-      ctx.fillStyle = "#FFFFFF";
-      ctx.textAlign = "center";
-      
-      // Posisi Nama: Tengah (0.5), Tinggi 50% dari atas (0.50)
       ctx.fillText(nama, canvas.width * 0.5, canvas.height * 0.50);
 
-      // Tetapan Tulisan No. IC
       const saizIC = Math.round(canvas.width * 0.022);
       ctx.font = "normal " + saizIC + "px Arial";
-      
-      // Posisi IC: Tengah (0.5), Tinggi 55% dari atas (0.55)
       ctx.fillText(ic, canvas.width * 0.5, canvas.height * 0.52);
 
-      // Tukar hasil kepada gambar JPG berkualiti tinggi
       const dataURL = canvas.toDataURL('image/jpeg', 0.95);
 
-      // Paparkan pratonton & butang simpan
       document.getElementById('hasilSijil').src = dataURL;
       const link = document.getElementById('linkDownload');
       link.href = dataURL;
@@ -91,7 +146,7 @@
     };
 
     img.onerror = function() {
-      alert("Ralat: Fail gambar 'sijil.jpg' tidak dijumpai dalam GitHub! Sila semak nama fail gambar anda.");
+      alert("Ralat: Fail gambar 'sijil.jpg' tidak dijumpai dalam GitHub!");
     };
   }
 </script>
