@@ -12,6 +12,7 @@
     input { width: 100%; padding: 12px; margin: 8px 0 16px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; text-transform: uppercase; }
     button { width: 100%; padding: 14px; background: #007bff; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
     button:hover { background: #0056b3; }
+    button:disabled { background: #999; cursor: not-allowed; }
     .nota { font-size: 12px; color: #666; margin-top: 12px; }
   </style>
 </head>
@@ -24,38 +25,62 @@
   <input type="text" id="nama" placeholder="NAMA PENUH (HURUF BESAR)" required>
   <input type="text" id="ic" placeholder="NO. KAD PENGENALAN (CTH: 950101081234)" required>
   
-  <button onclick="janaSijil()">Muat Turun Sijil (PDF)</button>
-  <p class="nota">Pastikan ejaan nama & nombor IC adalah tepat sebelum muat turun.</p>
+  <button id="btnDownload" onclick="janaSijil()">Muat Turun Sijil (PDF)</button>
+  <p class="nota">Sila buka pautan ini menggunakan Chrome atau Safari jika muat turun tidak bermula.</p>
 </div>
 
 <script>
   function janaSijil() {
     const nama = document.getElementById('nama').value.trim().toUpperCase();
     const ic = document.getElementById('ic').value.trim();
+    const btn = document.getElementById('btnDownload');
 
     if (!nama || !ic) {
       alert("Sila masukkan Nama Penuh dan No. IC anda.");
       return;
     }
 
+    if (!window.jspdf) {
+      alert("Sistem PDF gagal dimuatkan. Sila semak sambungan internet dan muat semula halaman.");
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerText = "Sedang menjana sijil...";
+
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('l', 'mm', 'a4'); 
 
     const img = new Image();
-    img.src = 'sijil.jpg';
+    img.crossOrigin = "Anonymous";
+    img.src = 'sijil.jpg'; // TUKAR JIKA NAMA FAIL GAMBAR ANDA BERBEZA
+
     img.onload = function() {
-      doc.addImage(img, 'JPEG', 0, 0, 297, 210);
+      try {
+        doc.addImage(img, 'JPEG', 0, 0, 297, 210);
 
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(22);
-      doc.setTextColor(30, 30, 30);
-      doc.text(nama, 148.5, 105, { align: "center" });
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(22);
+        doc.setTextColor(30, 30, 30);
+        doc.text(nama, 148.5, 105, { align: "center" });
 
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(14);
-      doc.text(ic, 148.5, 115, { align: "center" });
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(14);
+        doc.text(ic, 148.5, 115, { align: "center" });
 
-      doc.save("ESijil_" + nama.replace(/\s+/g, '_') + ".pdf");
+        doc.save("ESijil_" + nama.replace(/\s+/g, '_') + ".pdf");
+      } catch (e) {
+        alert("Ralat memproses sijil: " + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Muat Turun Sijil (PDF)";
+      }
+    };
+
+    img.onerror = function() {
+      alert("Ralat: Fail gambar 'sijil.jpg' tidak dijumpai! Pastikan nama fail gambar dalam GitHub tepat seperti dalam kod.");
+      btn.disabled = false;
+      btn.innerText = "Muat Turun Sijil (PDF)";
     };
   }
 </script>
